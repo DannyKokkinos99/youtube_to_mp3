@@ -99,6 +99,32 @@ def set_mp3_metadata_with_cover(folder_path, artist, album, year):
             )
 
 
+def get_album_details(artist, album):
+    d = discogs_client.Client("my_user_agent/1.0", user_token=os.getenv("DISCO_API"))
+
+    # Search for an album
+    result = d.search(album, artist=artist, type="release")[0]
+
+    # Get first result (you can filter further if needed)
+
+    title = result.title
+    year = result.year
+    thumb = result.thumb  # Small image
+    cover_image = result.images[0]["uri"] if result.images else "No image available"
+
+    print(f"Title: {title}")
+    print(f"Year: {year}")
+    print(f"Artwork: {cover_image}")
+    if cover_image:
+        image_response = requests.get(cover_image)
+
+        if image_response.status_code == 200:
+            with open(f"cover.jpg", "wb") as file:
+                file.write(image_response.content)
+        else:
+            print(image_response.status_code)
+
+
 ARTIST = "Twenty One Pilots"
 ALBUM = "Vessel"
 YEAR = "2013"
@@ -106,55 +132,16 @@ YEAR = "2013"
 PLAYLIST_URL = (
     "https://www.youtube.com/playlist?list=PLoDAYWBKduzh5L8ISW_etHN0fBdzB_HRg"
 )
-BASE_FOLDER = "C:/Users/Danny/Music"
+BASE_FOLDER = os.getenv("BASE_PATH")
 ARTIST_FOLDER_PATH = f"{BASE_FOLDER}/{ARTIST}"
 ALBUM_FOLDER_PATH = f"{ARTIST_FOLDER_PATH}/{ALBUM}"
-OPTIONS = {
-    "outtmpl": f"{ALBUM_FOLDER_PATH}/%(title)s.%(ext)s",
-    "quiet": True,  # Suppress unnecessary output
-    "format": "mp3/bestaudio/best",
-    "audio-quality": "0",
-    "postprocessors": [
-        {  # Extract audio using ffmpeg
-            "key": "FFmpegExtractAudio",
-            "preferredcodec": "mp3",
-            "preferredquality": "320",  # Ensure 320 kbps bitrate
-        }
-    ],
-    "cookies_from_browser": ["firefox"],
-}
 
 
 # Download the songs
-# os.makedirs(ARTIST_FOLDER_PATH, exist_ok=True)
-# os.makedirs(ALBUM_FOLDER_PATH, exist_ok=True)
-# download_from_playlist(PLAYLIST_URL)
+os.makedirs(ARTIST_FOLDER_PATH, exist_ok=True)
+os.makedirs(ALBUM_FOLDER_PATH, exist_ok=True)
+download_from_playlist(PLAYLIST_URL)
 # Fix names
-# clean_mp3_filenames(ALBUM_FOLDER_PATH)
+clean_mp3_filenames(ALBUM_FOLDER_PATH)
 # Add meta data such as title, album and artist
-# set_mp3_metadata_with_cover(ALBUM_FOLDER_PATH, ARTIST, ALBUM, YEAR)
-
-
-d = discogs_client.Client("my_user_agent/1.0", user_token=os.getenv("DISCO_API"))
-
-# Search for an album
-result = d.search("Blurryface", artist="twenty one pilots", type="release")[0]
-
-# Get first result (you can filter further if needed)
-
-title = result.title
-year = result.year
-thumb = result.thumb  # Small image
-cover_image = result.images[0]["uri"] if result.images else "No image available"
-
-print(f"Title: {title}")
-print(f"Year: {year}")
-print(f"Artwork: {cover_image}")
-if cover_image:
-    image_response = requests.get(cover_image)
-
-    if image_response.status_code == 200:
-        with open(f"cover.jpg", "wb") as file:
-            file.write(image_response.content)
-    else:
-        print(image_response.status_code)
+set_mp3_metadata_with_cover(ALBUM_FOLDER_PATH, ARTIST, ALBUM, YEAR)
