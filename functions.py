@@ -32,7 +32,14 @@ def download_from_playlist(album_path, playlist_url):
 
 
 def clean_mp3_filenames(folder_path):
-    patterns = [r"^.* - ", r"\s*\(Audio\)", r" ft\..*?(?=\.mp3$)", r"^.*?：\s*"]
+    patterns = [
+        r"^.* - ",
+        r"\s*\(Audio\)",
+        r"\s*ft\..*?(?=\.\w+$)",
+        r"\s*feat\..*?(?=\.\w+$)",
+        r"\s*\([^)]*\)",
+        r"\s*\[[^]]*\]",
+    ]
 
     # Loop through all files in the specified folder
     for filename in os.listdir(folder_path):
@@ -44,15 +51,21 @@ def clean_mp3_filenames(folder_path):
             # Apply all regex patterns to remove parts from the filename
             for pattern in patterns:
                 new_filename = re.sub(pattern, "", new_filename)
+            # Skip names that are contained within a bracket
+            if new_filename == ".mp3":
+                continue
 
-            # Ensure the filename doesn't change if no modification was needed
             if new_filename != filename:
                 # Build the full path for renaming
                 old_path = os.path.join(folder_path, filename)
                 new_path = os.path.join(folder_path, new_filename)
 
-                # Rename the file
-                os.rename(old_path, new_path)
+                try:
+                    os.rename(old_path, new_path)
+                except FileExistsError:
+                    print(f"Failed to rename {filename} as name already exists❌")
+                    continue
+
                 print(f"Renamed: {filename} -> {new_filename} ✅")
 
 
@@ -93,27 +106,38 @@ def set_mp3_metadata_with_cover(folder_path, artist, album, year):
             )
 
 
-def get_album_details(artist, album):
-    d = discogs_client.Client("my_user_agent/1.0", user_token=os.getenv("DISCO_API"))
+def get_album_details(artist, album, album_path):
 
-    # Search for an album
-    result = d.search(album, artist=artist, type="release")[0]
-
-    # Get first result (you can filter further if needed)
-
-    title = result.title
+    token = os.getenv("DISCO_TOKEN")
+    user_agent = "my_user_agent/1.0"
+    d = discogs_client.Client(user_agent, user_token=token)
+    # # Search for an album
+    try:
+        result = d.search(album, artist=artist, type="release")[0]
+    except IndexError:
+        print(f"No release found for '{album}' by '{artist}' ❌")
+        return None
     year = result.year
-    thumb = result.thumb  # Small image
-    cover_image = result.images[0]["uri"] if result.images else "No image available"
+    images = result.images
+    cover_image_url = images[0]["uri"] if images else None
 
-    print(f"Title: {title}")
-    print(f"Year: {year}")
-    print(f"Artwork: {cover_image}")
-    if cover_image:
-        image_response = requests.get(cover_image)
+    if cover_image_url:
+        try:
+            headers = {"User-Agent": user_agent}
+            response = requests.get(cover_image_url, stream=True, headers=headers)
+            response.raise_for_status()  # Raise an exception for bad status codes
 
-        if image_response.status_code == 200:
-            with open(f"cover.jpg", "wb") as file:
-                file.write(image_response.content)
-        else:
-            print(image_response.status_code)
+            # Determine the filename from the URL
+            filename = os.path.join(album_path, "cover.jpg")
+
+            with open(filename, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            print(f"Artwork downloaded to: {filename}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading artwork: {e}")
+            return None
+    else:
+        print("No artwork available for this release.")
+        return None
+    return year
