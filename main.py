@@ -11,20 +11,12 @@ from functions import (
 load_dotenv()
 
 # Set these variables
-ARTIST = "Aurora"
+ARTIST = ""
 ALBUM = [
-    "All My Demons Greeting Me As A Friend",
-    "Infections Of A Different Kind (Step 1)",
-    "Infections Of A Different Kind (Step 2)",
-    "The Gods We Can Touch",
-    "What Happened To The Heart",
+    "",
 ]
 PLAYLIST_URL = [
-    "https://www.youtube.com/playlist?list=PLPlCeFqZDUzn4QugqOyyBC1kbJA5VqRvV",
-    "https://www.youtube.com/playlist?list=PLfimnwaZdumiIPXflVlv7i3DnepNLnFyW",
-    "https://www.youtube.com/playlist?list=PLyq58SwT52VGVTgxnredJzGqJ0gdoZS-O",
-    "https://www.youtube.com/playlist?list=PL7QOWfqDaxmD69PYJWrUHJ1TBcma2iz6e",
-    "https://www.youtube.com/playlist?list=PLzbGLskt3hhmPtMlmjAIznVe1p8JvBVit",
+    "",
 ]
 # can edit base folder in .env file
 BASE_FOLDER = os.getenv("BASE_PATH")
