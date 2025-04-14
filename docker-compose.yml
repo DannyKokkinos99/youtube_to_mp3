@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  ytb-mp3-download-dev:
+    image: ytb-mp3-download:dev
+    container_name: ytb-mp3-download-dev
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+    volumes:
+      - .:/app

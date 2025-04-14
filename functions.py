@@ -4,9 +4,12 @@ import re
 import subprocess
 import discogs_client
 import requests
+from utility.logger import get_logger
+
+logger = get_logger(__name__)
 
 
-def download_from_playlist(album_path, playlist_url):
+def download_mp3(album_path, url):
     command = [
         "yt-dlp",  # The yt-dlp executable
         "-q",
@@ -22,23 +25,20 @@ def download_from_playlist(album_path, playlist_url):
         "--match-filter",
         "duration < 600",
     ]
-    command.append(playlist_url)
-    print("Downloading files...")
+    command.append(url)
     try:
         subprocess.run(command, check=True)
-        print("Download completed successfully!")
     except subprocess.CalledProcessError as e:
-        print(f"Error occurred during download: {e}")
+        logger.error(f"Error occurred during download: {e}")
 
 
 def clean_mp3_filenames(folder_path):
     patterns = [
-        r"^.* - ",
-        r"\s*\(Audio\)",
-        r"\s*ft\..*?(?=\.\w+$)",
-        r"\s*feat\..*?(?=\.\w+$)",
-        r"\s*\([^)]*\)",
-        r"\s*\[[^]]*\]",
+        r"^.* - ",  # Remove Artist from song name
+        r"\s*ft\..*?(?=\.\w+$)",  # Remove features
+        r"\s*feat\..*?(?=\.\w+$)",  # Remove features
+        r"\s*\([^)]*\)",  # Remove brackets
+        r"\s*\[[^]]*\]",  # Remove square brackets
     ]
 
     # Loop through all files in the specified folder
@@ -63,10 +63,10 @@ def clean_mp3_filenames(folder_path):
                 try:
                     os.rename(old_path, new_path)
                 except FileExistsError:
-                    print(f"Failed to rename {filename} as name already exists❌")
+                    logger.info(f"--> Failed to rename {filename} already exists ❌")
                     continue
 
-                print(f"Renamed: {filename} -> {new_filename} ✅")
+                logger.info(f"--> Renamed: {filename} -> {new_filename}")
 
 
 def set_mp3_metadata_with_cover(folder_path, artist, album, year):
@@ -101,9 +101,7 @@ def set_mp3_metadata_with_cover(folder_path, artist, album, year):
             # Save the changes to the MP3 file
             audio_file.tag.save()
 
-            print(
-                f"Updated metadata for: {filename} -> Title: {title}, Artist: {artist}, Album: {album} ✅"
-            )
+            logger.info(f"--> Updated metadata for: {filename}")
 
 
 def get_album_details(artist, album, album_path):
@@ -111,11 +109,10 @@ def get_album_details(artist, album, album_path):
     token = os.getenv("DISCO_TOKEN")
     user_agent = "my_user_agent/1.0"
     d = discogs_client.Client(user_agent, user_token=token)
-    # # Search for an album
     try:
         result = d.search(album, artist=artist, type="release")[0]
     except IndexError:
-        print(f"No release found for '{album}' by '{artist}' ❌")
+        logger.info(f"--> No release found for '{album}' by '{artist}' ❌")
         return None
     year = result.year
     images = result.images
@@ -133,11 +130,10 @@ def get_album_details(artist, album, album_path):
             with open(filename, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
-            print(f"Artwork downloaded to: {filename}")
         except requests.exceptions.RequestException as e:
-            print(f"Error downloading artwork: {e}")
+            logger.info(f"--> Error downloading artwork: {e}")
             return None
     else:
-        print("No artwork available for this release.")
+        logger.info("--> No artwork available for this release.")
         return None
     return year
