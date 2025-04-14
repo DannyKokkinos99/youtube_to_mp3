@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   ytb-mp3-download-dev:
@@ -7,6 +7,6 @@ services:
     build:
       dockerfile: Dockerfile
     ports:
-      - '5000:5000'
+      - '5005:5005'
     volumes:
       - .:/app

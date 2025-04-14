@@ -15,7 +15,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose port 8000 to the outside world
-EXPOSE 5000
+EXPOSE 5005
 
 # Command to run the application
 CMD ["python", "app.py"]
