@@ -1,4 +1,6 @@
 import os
+import random
+import string
 from dotenv import load_dotenv
 from utility.logger import get_logger
 from flask import Flask, render_template, request, redirect, url_for, flash
@@ -26,6 +28,7 @@ def process_submitted_data(**kwargs):
     BASE_FOLDER = os.getenv(
         "BASE_PATH"
     )  # TODO: Change the base path to a container local address
+    BASE_FOLDER = "music"
     if "album_urls" in kwargs:
         ARTIST_FOLDER_PATH = os.path.join(BASE_FOLDER, artist)
         for album, url in zip(albums, album_urls):
@@ -48,7 +51,10 @@ def process_submitted_data(**kwargs):
             logger.info("-> Album downloaded successfully ✅\n\n")
 
     elif "playlist_urls" in kwargs:
-        playlists_folder_path = os.path.join(BASE_FOLDER, "playlists")
+        random_chars = "".join(
+            random.choices(string.ascii_letters + string.digits, k=4)
+        )
+        playlists_folder_path = os.path.join(BASE_FOLDER, f"playlists-{random_chars}")
         for i, url in enumerate(playlist_urls):
             playlist_folder_path = os.path.join(
                 playlists_folder_path, f"playlist-{i+1}"
@@ -90,7 +96,7 @@ def get_form():
 @app.route("/download", methods=["POST"])
 def prepare_content():
     form_data = request.form.to_dict()
-    logger.debug(form_data)
+    # logger.debug(form_data)
 
     if form_data["form_type"] == "album":
         list_albums = form_data["albums"].split(",")

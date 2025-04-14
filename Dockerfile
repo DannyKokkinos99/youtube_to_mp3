@@ -12,6 +12,7 @@ WORKDIR /app
 COPY . /app
 
 # Install any necessary packages specified in requirements.txt
+RUN apk add --no-cache ffmpeg
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose port 8000 to the outside world

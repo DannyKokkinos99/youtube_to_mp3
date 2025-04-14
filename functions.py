@@ -18,8 +18,8 @@ def download_mp3(album_path, url):
         "mp3",
         "--audio-quality",
         "0",
-        "--cookies-from-browser",
-        "firefox",  # Path to the cookies file
+        # "--cookies-from-browser",
+        # "firefox",  # Path to the cookies file
         "--output",
         f"{album_path}/%(title)s.%(ext)s",
         "--match-filter",
