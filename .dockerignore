@@ -1,1 +1,9 @@
-test.py
+.venv
+__pycache__
+Dockerfile
+docker-compose.yml
+.dockerignore
+.env.example
+.gitignore
+.git
+utility/__pycache__

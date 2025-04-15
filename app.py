@@ -3,14 +3,17 @@ import random
 import string
 from dotenv import load_dotenv
 from utility.logger import get_logger
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
 from functions import (
     download_mp3,
     set_mp3_metadata_with_cover,
     clean_mp3_filenames,
     get_album_details,
+    serve_content,
+    delete_local_content,
 )
 
+BASE_FOLDER = "music"
 load_dotenv()
 logger = get_logger(__name__)
 app = Flask(__name__)
@@ -25,10 +28,7 @@ def process_submitted_data(**kwargs):
     playlist_urls = kwargs.get("playlist_urls")
     song_urls = kwargs.get("song_urls")
 
-    BASE_FOLDER = os.getenv(
-        "BASE_PATH"
-    )  # TODO: Change the base path to a container local address
-    BASE_FOLDER = "music"
+    os.makedirs(BASE_FOLDER, exist_ok=True)
     if "album_urls" in kwargs:
         ARTIST_FOLDER_PATH = os.path.join(BASE_FOLDER, artist)
         for album, url in zip(albums, album_urls):
@@ -49,12 +49,14 @@ def process_submitted_data(**kwargs):
                 logger.info(f"-> Adding metadata:")
                 set_mp3_metadata_with_cover(album_folder_path, artist, album, year)
             logger.info("-> Album downloaded successfully ✅\n\n")
+        zip_filename = serve_content(BASE_FOLDER, artist)
 
     elif "playlist_urls" in kwargs:
         random_chars = "".join(
             random.choices(string.ascii_letters + string.digits, k=4)
         )
-        playlists_folder_path = os.path.join(BASE_FOLDER, f"playlists-{random_chars}")
+        playlist_folder = f"playlists-{random_chars}"
+        playlists_folder_path = os.path.join(BASE_FOLDER, playlist_folder)
         for i, url in enumerate(playlist_urls):
             playlist_folder_path = os.path.join(
                 playlists_folder_path, f"playlist-{i+1}"
@@ -66,9 +68,11 @@ def process_submitted_data(**kwargs):
             logger.info(f"Downloading playlist-{i}...")
             download_mp3(playlist_folder_path, url)
             logger.info("-> Playlist downloaded successfully ✅")
+        zip_filename = serve_content(BASE_FOLDER, playlist_folder)
 
     elif "song_urls" in kwargs:
-        songs_folder_path = os.path.join(BASE_FOLDER, "songs")
+        main_folder_name = "songs"
+        songs_folder_path = os.path.join(BASE_FOLDER, main_folder_name)
         for url in song_urls:
             # # Create folders
             os.makedirs(songs_folder_path, exist_ok=True)
@@ -76,7 +80,10 @@ def process_submitted_data(**kwargs):
             logger.info(f"Downloading song...")
             download_mp3(songs_folder_path, url)
             logger.info("-> Song downloaded successfully ✅")
+        zip_filename = serve_content(BASE_FOLDER, main_folder_name)
     logger.info("Download complete ✅")
+
+    return zip_filename
 
 
 # --- Flask Routes ---
@@ -95,23 +102,27 @@ def get_form():
 
 @app.route("/download", methods=["POST"])
 def prepare_content():
+    delete_local_content(BASE_FOLDER)
     form_data = request.form.to_dict()
     # logger.debug(form_data)
 
     if form_data["form_type"] == "album":
         list_albums = form_data["albums"].split(",")
         list_album_urls = form_data["album_urls"].split(",")
-        process_submitted_data(
+        zip_filename = process_submitted_data(
             artist=form_data["artist"],
             albums=list_albums,
             album_urls=list_album_urls,
         )
+        return send_file(zip_filename, as_attachment=True)
     elif form_data["form_type"] == "playlists":
         list_playlist_urls = form_data["urls"].split(",")
-        process_submitted_data(playlist_urls=list_playlist_urls)
+        zip_filename = process_submitted_data(playlist_urls=list_playlist_urls)
+        return send_file(zip_filename, as_attachment=True)
     elif form_data["form_type"] == "songs":
         song_urls = form_data["urls"].split(",")
-        process_submitted_data(song_urls=song_urls)
+        zip_filename = process_submitted_data(song_urls=song_urls)
+        return send_file(zip_filename, as_attachment=True)
     else:
         print("ISSUE OCCURED DURING DOWNLOADING")
     return redirect(url_for("index"))
@@ -124,4 +135,4 @@ def index():
 
 # --- Run the App ---
 if __name__ == "__main__":
-    app.run(debug=True, port=5005, host="0.0.0.0")
+    app.run(port=5005, host="0.0.0.0")

@@ -1,3 +1,0 @@
-1. Once download is completed within the container zip files and serve to user
-2. Add cancel button while downloading?
-3. Remove download folder once files have been served to user

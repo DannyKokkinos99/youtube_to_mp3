@@ -1,9 +1,11 @@
 import eyed3
 import os
+import shutil
 import re
 import subprocess
 import discogs_client
 import requests
+import zipfile
 from utility.logger import get_logger
 
 logger = get_logger(__name__)
@@ -19,7 +21,7 @@ def download_mp3(album_path, url):
         "--audio-quality",
         "0",
         # "--cookies-from-browser",
-        # "firefox",  # Path to the cookies file
+        # "firefox",
         "--output",
         f"{album_path}/%(title)s.%(ext)s",
         "--match-filter",
@@ -106,7 +108,7 @@ def set_mp3_metadata_with_cover(folder_path, artist, album, year):
 
 def get_album_details(artist, album, album_path):
 
-    token = os.getenv("DISCO_TOKEN")
+    token = os.getenv("DISCOGS_TOKEN")
     user_agent = "my_user_agent/1.0"
     d = discogs_client.Client(user_agent, user_token=token)
     try:
@@ -137,3 +139,24 @@ def get_album_details(artist, album, album_path):
         logger.info("--> No artwork available for this release.")
         return None
     return year
+
+
+def serve_content(base_folder, folder_name):
+    folder_to_zip = os.path.join(base_folder, folder_name)
+    zip_filename = f"{folder_name}.zip"
+
+    if not os.path.exists(folder_to_zip):
+        logger.error("Unable to zip content as it does not exist")
+    zip_folder_path = os.path.join(base_folder, zip_filename)
+    logger.debug(f"ZIP PATH IS {zip_folder_path}")
+    with zipfile.ZipFile(zip_folder_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(folder_to_zip):
+            for file in files:
+                file_path = os.path.join(root, file)
+                zipf.write(file_path, os.path.relpath(file_path, base_folder))
+    return zip_folder_path
+
+
+def delete_local_content(base_folder):
+    if os.path.exists(base_folder):
+        shutil.rmtree(base_folder)
