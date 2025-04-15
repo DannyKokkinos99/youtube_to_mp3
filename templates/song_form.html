@@ -2,8 +2,14 @@
 <form action="/download" method="POST" autocomplete="off">
   <input type="hidden" name="form_type" value="songs" />
   <div class="form-group">
-    <label for="urls">Song URL:</label>
-    <input type="text" id="urls" name="urls" required />
+    <label for="urls">Link</label>
+    <input
+      type="text"
+      id="urls"
+      name="urls"
+      placeholder="Enter all song urls here comma-separated"
+      required
+    />
   </div>
   <button type="submit">Download</button>
 </form>

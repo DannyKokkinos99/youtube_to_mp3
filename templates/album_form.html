@@ -2,16 +2,33 @@
 <form action="/download" method="POST" autocomplete="off">
   <input type="hidden" name="form_type" value="album" />
   <div class="form-group">
-    <label for="artist">Artist name:</label>
-    <input type="text" id="artist" name="artist" required />
+    <label for="artist">Artist</label>
+    <input
+      type="text"
+      id="artist"
+      name="artist"
+      placeholder="Enter artist name here"
+      required
+    />
   </div>
   <div class="form-group">
-    <label for="albums">Album names (comma-separated):</label>
-    <input type="text" id="albums" name="albums" required />
+    <label for="albums">Album</label>
+    <input
+      type="text"
+      id="albums"
+      name="albums"
+      placeholder="Enter all albums here comma-separated"
+    />
   </div>
   <div class="form-group">
-    <label for="urls">Playlist URLs (comma-separated):</label>
-    <input type="text" id="album_urls" name="album_urls" required />
+    <label for="urls">Link</label>
+    <input
+      type="text"
+      id="album_urls"
+      name="album_urls"
+      placeholder="Enter all playlist urls here comma-separated"
+      required
+    />
   </div>
   <button type="submit">Download</button>
 </form>

@@ -1,0 +1,92 @@
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: black; /* Initial background color to avoid white flash */
+  background-size: cover;      /* Ensures the image covers the entire page */
+  background-position: center; /* Centers the image on the page */
+  background-attachment: fixed;/* Keeps the image fixed while scrolling */
+  margin: 0;                   /* Removes default margin */
+  font-family: Arial, sans-serif; /* Choose your preferred font */
+}
+h1, h2, h3, label, select, button, p {
+  font-family: 'Poppins', sans-serif;
+}
+h1.title{
+  font-size: 24px;
+  color: white;
+  text-align: center;
+  margin: 0px;
+}
+h2.title{
+  font-size: 14px;
+  color: #4e5c69;
+  text-align: center;
+  margin: -4px;
+  margin-bottom: 20px;
+}
+  
+/* Centering the form container */
+.button-background {
+  background-color: #131b2b;
+  border-radius: 16px;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 76%);
+  width: 450px;
+  height: 532px;
+}
+
+label {
+  color: white;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  margin-left: 24px;
+  font-weight: bold;
+}
+
+select{
+  width:406px;
+  padding: 8px;
+  background-color: #1F2937;
+  color: #fff;
+  border: 2px solid black;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-left: 22px
+
+}
+
+input {
+  width: 380px;
+  padding: 11px;
+  background-color: #1F2937;
+  color: #fff;
+  border: 2px solid black;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-left: 22px
+}
+
+input::placeholder {
+  color: #888;
+}
+
+button {
+  width: 404px;
+  padding: 10px;
+  background-color: #9333EA;
+  color: black;
+  border: 2px solid black;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-left: 22px;
+  margin-top: 20px;
+}
+
+img {
+  width: 50%;
+  margin-left: 112px;
+  margin-top: 18px;
+}

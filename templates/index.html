@@ -3,101 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Music Submission (HTMX + Toggles)</title>
-    <style>
-      body {
-        font-family: sans-serif;
-        padding: 20px;
-      }
-      .form-group {
-        margin-bottom: 15px;
-      } /* Spacing for form elements */
-      label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-      }
-      input[type="text"] {
-        width: 300px;
-        padding: 8px;
-        margin-top: 3px;
-        box-sizing: border-box;
-      }
-      button {
-        margin-top: 20px;
-        padding: 10px 15px;
-        cursor: pointer;
-      }
-      #response-message {
-        margin-top: 15px;
-        font-weight: bold;
-        min-height: 1.2em;
-      }
-      .success {
-        color: green;
-      }
-      .error {
-        color: red;
-      }
-
-      /* --- Toggle Switch CSS --- */
-      .switch-container {
-        display: flex;
-        align-items: center;
-        margin-top: 10px;
-      }
-      .switch-label {
-        margin-right: 10px;
-        font-weight: normal;
-      } /* Label text next to switch */
-      .switch {
-        position: relative;
-        display: inline-block;
-        width: 50px; /* Width of the switch */
-        height: 24px; /* Height of the switch */
-      }
-      /* Hide default HTML checkbox */
-      .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      /* The slider */
-      .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc; /* Default off color */
-        transition: 0.4s;
-        border-radius: 24px; /* Make it rounded */
-      }
-      /* The moving knob */
-      .slider:before {
-        position: absolute;
-        content: "";
-        height: 18px; /* Knob height */
-        width: 18px; /* Knob width */
-        left: 3px; /* Knob position */
-        bottom: 3px; /* Knob position */
-        background-color: white;
-        transition: 0.4s;
-        border-radius: 50%; /* Make knob circular */
-      }
-      /* Change background color when checked */
-      input:checked + .slider {
-        background-color: #2196f3; /* On color */
-      }
-      /* Move knob when checked */
-      input:checked + .slider:before {
-        transform: translateX(
-          26px
-        ); /* Move distance (width - knob_width - 2*left_pos) approx */
-      }
-      /* --- End Toggle Switch CSS --- */
-    </style>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>Youtube mp3 downloader</title>
     <!-- Include HTMX library -->
     <script
       src="https://unpkg.com/htmx.org@1.9.10"
@@ -106,24 +17,28 @@
     ></script>
   </head>
   <body>
-    <h1>Youtube to MP3 Downloader</h1>
+    <div class="button-background" id="button-background">
+      <img src="static/logo.svg" alt="YouTube to MP3 Icon">
+      <h1 class="title" id="title">Youtube to Mp3</h1>
+      <h2 class="title" id="title">Enter your music details below</h1>
 
-    <label for="formSelector">Choose download type:</label>
-    <select
-      id="formSelector"
-      name="form"
-      hx-get="/get-form"
-      hx-target="#form-container"
-      hx-swap="innerHTML"
-    >
-      <option value="">-- Select --</option>
-      <option value="albums">Albums</option>
-      <option value="playlists">Playlists</option>
-      <option value="song">Song</option>
-    </select>
+      <label for="formSelector">Select Option</label>
+      <select
+        id="formSelector"
+        name="form"
+        hx-get="/get-form"
+        hx-target="#form-container"
+        hx-swap="innerHTML"
+      >
+        <option value="">Select an option</option>
+        <option value="albums">Download albums</option>
+        <option value="playlists">Download playlists</option>
+        <option value="song">Download songs</option>
+      </select>
 
-    <div id="form-container">
-      <p>Please select a form from the dropdown above.</p>
+      <div id="form-container">
+        <p>Please select a form from the dropdown above.</p>
+      </div>
     </div>
   </body>
 </html>

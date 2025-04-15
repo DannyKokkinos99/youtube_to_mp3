@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 196 44">
+  <rect x="0.646" y="2.475" width="60" height="40" rx="10" fill="#FF0000"/>
+  <polygon points="25.646 12.373 40.646 22.373 25.646 32.373" fill="white"/>
+  <line x1="69.796" y1="22.475" x2="115.782" y2="22.475" stroke="black" stroke-width="2" style=""/>
+  <polygon points="116.208 17.475 126.208 22.475 116.208 27.475" fill="black"/>
+  <rect x="132.381" y="1.302" width="62.976" height="40.442" rx="5" fill="#9333EA" style=""/>
+  <text x="145.783" y="28.325" font-size="20" font-family="Arial" fill="white" style="white-space: pre; font-size: 20px;">mp3</text>
+</svg>
