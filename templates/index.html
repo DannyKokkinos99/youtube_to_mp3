@@ -18,9 +18,9 @@
   </head>
   <body>
     <div class="button-background" id="button-background">
-      <img src="static/logo.svg" alt="YouTube to MP3 Icon">
+      <img src="static/logo.svg" alt="YouTube to MP3 Icon" />
       <h1 class="title" id="title">Youtube to Mp3</h1>
-      <h2 class="title" id="title">Enter your music details below</h1>
+      <h2 class="title" id="title">Enter your music details below</h2>
 
       <label for="formSelector">Select Option</label>
       <select
@@ -36,8 +36,29 @@
         <option value="song">Download songs</option>
       </select>
 
-      <div id="form-container">
-      </div>
+      <div id="form-container"></div>
     </div>
+    <script>
+      document.body.addEventListener("htmx:afterSettle", function (evt) {
+        // Only run if the new content contains the form
+        const dropdown = document.getElementById("formSelector");
+        const form = document.getElementById("download-form");
+        const button = document.getElementById("download-btn");
+        const inputs = form.querySelectorAll("input, select, textarea");
+        console.log("RAN");
+        if (form && button && dropdown) {
+          form.addEventListener("submit", function () {
+            console.log("disabled");
+            button.disabled = true;
+            dropdown.disabled = true;
+            form.disabled = true;
+
+            inputs.forEach((input) => {
+              input.readOnly = true;
+            });
+          });
+        }
+      });
+    </script>
   </body>
 </html>

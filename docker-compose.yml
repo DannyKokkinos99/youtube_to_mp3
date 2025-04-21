@@ -1,11 +1,24 @@
 version: '3.8'
 
 services:
-  ytb-2-mp3:
-    image: ytb-2-mp3:latest
+  # Prod container
+  # ytb-2-mp3: 
+  #   image: ytb-2-mp3:latest
+  #   container_name: ytb-2-mp3
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '5005:5005'
+
+  # Dev container
+  ytb-2-mp3: 
+    image: ytb-2-mp3:dev
     container_name: ytb-2-mp3
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - '5005:5005'
+    volumes:
+      - .:/app

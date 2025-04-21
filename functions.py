@@ -37,10 +37,10 @@ def download_mp3(album_path, url):
 def clean_mp3_filenames(folder_path):
     patterns = [
         r"^.* - ",  # Remove Artist from song name
-        r"\s*ft\..*?(?=\.\w+$)",  # Remove features
-        r"\s*feat\..*?(?=\.\w+$)",  # Remove features
         r"\s*\([^)]*\)",  # Remove brackets
         r"\s*\[[^]]*\]",  # Remove square brackets
+        r"\s*ft\..*?(?=\.\w+$)",  # Remove features
+        r"\s*feat\..*?(?=\.\w+$)",  # Remove features
     ]
 
     # Loop through all files in the specified folder

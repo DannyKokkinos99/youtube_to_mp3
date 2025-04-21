@@ -1,5 +1,10 @@
 <!-- This content is loaded dynamically by HTMX -->
-<form action="/download" method="POST" autocomplete="off">
+<style>
+  .button-background {
+    height: 538px;
+  }
+</style>
+<form action="/download" method="POST" autocomplete="off" id="download-form">
   <input type="hidden" name="form_type" value="album" />
   <div class="form-group">
     <label for="artist">Artist</label>
@@ -21,7 +26,7 @@
     />
   </div>
   <div class="form-group">
-    <label for="urls">Link</label>
+    <label for="album_urls">Link</label>
     <input
       type="text"
       id="album_urls"
@@ -30,5 +35,5 @@
       required
     />
   </div>
-  <button type="submit">Download</button>
+  <button type="submit" id="download-btn">Download</button>
 </form>

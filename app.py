@@ -3,7 +3,16 @@ import random
 import string
 from dotenv import load_dotenv
 from utility.logger import get_logger
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    send_file,
+    make_response,
+)
 from functions import (
     download_mp3,
     set_mp3_metadata_with_cover,
@@ -38,7 +47,12 @@ def process_submitted_data(**kwargs):
             os.makedirs(album_folder_path, exist_ok=True)
             # # Download the songs
             logger.info(f"Downloading album {album}...")
-            download_mp3(album_folder_path, url)
+            try:
+                download_mp3(album_folder_path, url)
+            except Exception as e:
+                logger.error(f"Error downloading from {url}: {e}")
+                flash(f"Error downloading from {url}: {e}", "error")
+                continue
             # # Fix names
             logger.info(f"-> Steralising files:")
             clean_mp3_filenames(album_folder_path)
@@ -66,7 +80,12 @@ def process_submitted_data(**kwargs):
             os.makedirs(playlist_folder_path, exist_ok=True)
             # # Download the songs
             logger.info(f"Downloading playlist-{i}...")
-            download_mp3(playlist_folder_path, url)
+            try:
+                download_mp3(playlist_folder_path, url)
+            except Exception as e:
+                logger.error(f"Error downloading from {url}: {e}")
+                flash(f"Error downloading from {url}: {e}", "error")
+                continue
             logger.info("-> Playlist downloaded successfully ✅")
         zip_filename = serve_content(BASE_FOLDER, playlist_folder)
 
@@ -78,7 +97,12 @@ def process_submitted_data(**kwargs):
             os.makedirs(songs_folder_path, exist_ok=True)
             # # Download the songs
             logger.info(f"Downloading song...")
-            download_mp3(songs_folder_path, url)
+            try:
+                download_mp3(songs_folder_path, url)
+            except Exception as e:
+                logger.error(f"Error downloading from {url}: {e}")
+                flash(f"Error downloading from {url}: {e}", "error")
+                continue
             logger.info("-> Song downloaded successfully ✅")
         zip_filename = serve_content(BASE_FOLDER, main_folder_name)
     logger.info("Download complete ✅")
@@ -104,7 +128,6 @@ def get_form():
 def prepare_content():
     delete_local_content(BASE_FOLDER)
     form_data = request.form.to_dict()
-    # logger.debug(form_data)
 
     if form_data["form_type"] == "album":
         list_albums = form_data["albums"].split(",")
@@ -118,7 +141,10 @@ def prepare_content():
     elif form_data["form_type"] == "playlists":
         list_playlist_urls = form_data["urls"].split(",")
         zip_filename = process_submitted_data(playlist_urls=list_playlist_urls)
-        return send_file(zip_filename, as_attachment=True)
+        response = make_response(send_file(zip_filename, as_attachment=True))
+        response.set_cookie("redirect", "true", max_age=10)
+        return response
+
     elif form_data["form_type"] == "songs":
         song_urls = form_data["urls"].split(",")
         zip_filename = process_submitted_data(song_urls=song_urls)
@@ -135,4 +161,4 @@ def index():
 
 # --- Run the App ---
 if __name__ == "__main__":
-    app.run(port=5005, host="0.0.0.0")
+    app.run(debug=True, port=5005, host="0.0.0.0")

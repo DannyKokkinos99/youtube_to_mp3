@@ -29,11 +29,12 @@ h2.title{
 .button-background {
   background-color: #131b2b;
   border-radius: 16px;
-  position: absolute;
+  position: fixed;
   left: 50%;
-  transform: translate(-50%, 50%);
+  top: 20%;
+  transform: translateX(-50%);
   width: 450px;
-  height: 532px;
+  height: 238px;
 }
 
 label {
